@@ -4,13 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +43,10 @@ public class MainActivity extends AppCompatActivity {
     private final String[] spinnerItems = {"300", "500", "1000", "2000","3000"};
     private MainActivity HotPepperUtils;
 
-    TextView textView1;
+    static TextView textView;
+    static ImageView imageView;
+    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         double  mLat=35.118223; //緯度
         double  mLng=137.088432; //経度
         int mLunch=0; //ランチの有無　0:絞り込まない（初期値）1:絞り込む
-        int mRange=1000; //1: 300m 2: 500m 3: 1000m (初期値) 4: 2000m 5: 3000m
+        int mRange=5; //1: 300m 2: 500m 3: 1000m (初期値) 4: 2000m 5: 3000m
         ArrayList<String> mGenreCdList = new ArrayList<String>(Arrays.asList("G001", "G002", "G003"));//ジャンル選択(https://webservice.recruit.co.jp/hotpepper/genre/v1/?key=sampleを参照)
         int mMidnight_meal=0; //23時以降食事OK	0:絞り込まない（初期値） 1:絞り込む
         ArrayList<String> mKeywordList = new ArrayList<String>(Arrays.asList("海鮮")); //いずれか最低1つが必要。// 店名かな、店名、住所、駅名、お店ジャンルキャッチ、キャッチのフリーワード検索(部分一致)が可能です。文字コードはUTF8。半角スペース区切りの文字列を渡すことでAND検索になる。複数指定可能
@@ -89,9 +96,7 @@ public class MainActivity extends AppCompatActivity {
     //@Override
     public void onRestaurantAsyncCallBack(ArrayList<HotPepperGourmet> hotPepperGourmetArray) {
         // hotPepperGourmetArrayに飲食店の情報がセットされている
-         textView1=findViewById(R.id.textView1);
-         textView1.setText(hotPepperGourmetArray.toString());
-         Log.d("SAMPLE", hotPepperGourmetArray.toString());
+
     }
 
 
@@ -267,20 +272,20 @@ public class MainActivity extends AppCompatActivity {
 
         // URLの生成
         StringBuilder urlStringBuilder = new StringBuilder();
-        urlStringBuilder.append("http://webservice.recruit.co.jp/hotpepper/gourmet/v1/?key=");
+        urlStringBuilder.append("https://webservice.recruit.co.jp/hotpepper/gourmet/v1/?key="); //28以降はhttps
         urlStringBuilder.append("508dba382aa41e5c");
-        urlStringBuilder.append(genreSb.toString()); // 飲食店のジャンル
-        urlStringBuilder.append("&midnight_meal="); // 23時以降食事OK
-        urlStringBuilder.append(hotPepperGourmetSearch.getMidnight_meal());
-        urlStringBuilder.append(keywordSb.toString()); // キーワード
-        urlStringBuilder.append("&lunch="); // ランチ営業
-        urlStringBuilder.append(hotPepperGourmetSearch.getLunch());
-        urlStringBuilder.append("&lat="); // 緯度
-        urlStringBuilder.append(hotPepperGourmetSearch.getLat());
-        urlStringBuilder.append("&lng="); // 経度
-        urlStringBuilder.append(hotPepperGourmetSearch.getLng());
-        urlStringBuilder.append("&range="); // 検索範囲距離
-        urlStringBuilder.append(hotPepperGourmetSearch.getRange());
+//        urlStringBuilder.append(genreSb.toString()); // 飲食店のジャンル
+//        urlStringBuilder.append("&midnight_meal="); // 23時以降食事OK
+//        urlStringBuilder.append(hotPepperGourmetSearch.getMidnight_meal());
+//        urlStringBuilder.append(keywordSb.toString()); // キーワード
+//        urlStringBuilder.append("&lunch="); // ランチ営業
+//        urlStringBuilder.append(hotPepperGourmetSearch.getLunch());
+        urlStringBuilder.append("&lat=35.118223"); // 緯度
+//        urlStringBuilder.append(hotPepperGourmetSearch.getLat());
+        urlStringBuilder.append("&lng=137.088432"); // 経度
+//        urlStringBuilder.append(hotPepperGourmetSearch.getLng());
+        urlStringBuilder.append("&range=5"); // 検索範囲距離
+//        urlStringBuilder.append(hotPepperGourmetSearch.getRange());
         urlStringBuilder.append("&count=100"); // 1ページあたりの取得数
         urlStringBuilder.append("&format=json") // レスポンス形式
         ;
@@ -288,10 +293,10 @@ public class MainActivity extends AppCompatActivity {
         URL url = null;
 
         try {
-            Log.d("SAMPLE", "try");
             url = new URL(urlStringBuilder.toString());
             // 非同期処理
             new RestaurantAsync(activity).execute(url).get(10000, TimeUnit.MILLISECONDS);
+            Log.d("SAMPLE", "callHotPepperGourmetRestaurant: try finish");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
@@ -309,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
                 RestaurantAsync.sProgressDialog.dismiss();
             }
         }
-        Log.d(TAG, url.toString());
+        Log.d("SAMPLE", url.toString());
     }
 
 
@@ -355,17 +360,21 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(URL... url) {
             HttpURLConnection con = null;
             URL urls = url[0];
-
+            Log.d("SAMPLE",urls.toString());
             try {
+
                 con = (HttpURLConnection) urls.openConnection();
+                Log.d("SAMPLE", "doInBackground:try 1 ");
                 // JSONダウンロード
                 con.setRequestMethod("GET");
                 // タイムアウト3秒
                 con.setConnectTimeout(3000);
+                Log.d("SAMPLE", "doInBackground:try 1 ");
                 con.setReadTimeout(3000);
+                Log.d("SAMPLE", "doInBackground:try 3 ");
                 // 接続
                 con.connect();
-
+                Log.d("SAMPLE", "doInBackground:try 4 ");
                 // レスポンスコードの確認
                 int resCd = con.getResponseCode();
 
@@ -380,14 +389,14 @@ public class MainActivity extends AppCompatActivity {
 
                 while (true) {
                     line = reader.readLine();
-
+                    Log.d("SAMPLE", "doInBackground: line:"+line );
                     if (line == null) {
                         break;
                     }
 
                     mBuffer.append(line);
                 }
-
+                Log.d("SAMPLE", "doInBackground:finish ");
                 // クローズ
                 inputStream.close();
                 reader.close();
@@ -413,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-
+            Log.d("SAMPLE", "onPostExecute: "+result);
             try {
                 Log.d("SAMPLE", "try2");
                 // JSONをパースして各飲食店の情報を取得する
@@ -423,14 +432,16 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("SAMPLE", "2");
                 ArrayList<HotPepperGourmet> hotPepperGourmetArray = new ArrayList<>();
                 Log.d("SAMPLE", "3");
-                Log.d("SAMPLE", hotPepperGourmetArray.toString());
 
-
+                int[] textViews=new int[]{R.id.textView1,R.id.textView2,R.id.textView3,R.id.textView4,R.id.textView5,R.id.textView6,R.id.textView7,R.id.textView8,R.id.textView9,R.id.textView10};
+                int[] imageViews=new int[]{R.id.imageView1,R.id.imageView2,R.id.imageView3,R.id.imageView4,R.id.imageView5,R.id.imageView6,R.id.imageView7,R.id.imageView8,R.id.imageView9,R.id.imageView10};
+                
                 Log.d("SAMPLE",jsonArray.toString() );
                 for (int i = 0; i < jsonArray.length(); i++) {
-
+                
                     HotPepperGourmet hotPepperGourmet = new HotPepperGourmet();
                     JSONObject json = jsonArray.getJSONObject(i);
+                    String photourl=json.getJSONObject("photo").getJSONObject("mobile").getString("l");
                     String id = json.getString("id"); // お店ID
                     String name = json.getString("name"); // 店名
                     String address = json.getString("address"); // 住所
@@ -438,7 +449,9 @@ public class MainActivity extends AppCompatActivity {
                     Double lng = json.getDouble("lng"); // 経度
                     String lunch = json.getString("lunch"); //ランチありなし
                     String url = json.getJSONObject("urls").getString("pc"); // URL
+                    String mobile_access=json.getString("mobile_access");
 
+                    Log.d(TAG, "画像url:"+photourl);
                     Log.d(TAG, "お店ID:" + id);
                     Log.d(TAG, "店名:" + name);
                     Log.d(TAG, "住所:" + address);
@@ -446,6 +459,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "経度:" + lng.toString());
                     Log.d(TAG, "ランチありなし:" + lunch);
                     Log.d(TAG, "URL:" + url);
+                    Log.d(TAG, "アクセス" + mobile_access);
 
                     hotPepperGourmet.setId(id);
                     hotPepperGourmet.setName(name);
@@ -456,6 +470,21 @@ public class MainActivity extends AppCompatActivity {
                     hotPepperGourmet.setUrl(url);
 
                     hotPepperGourmetArray.add(hotPepperGourmet);
+                    Log.d(TAG, "onPostExecute:"+hotPepperGourmetArray);
+
+
+                    if(i<=9) {
+                        Log.d(TAG, "onPostExecute: photourl"+photourl);
+                        imageView=(ImageView)mActivity.findViewById(imageViews[i]);
+                        textView = (TextView) mActivity.findViewById(textViews[i]);
+                        Picasso.get()
+                                .load(photourl)
+                                .resize(1000,1000)
+                                .into(imageView);
+                        textView.setText(name + "\n" + address + "\n" + url+"\n"+mobile_access+"\n");
+                    }
+
+                    Log.d("SAMPLE", "wowowow"+hotPepperGourmetArray.toString());
                 }
 
                 if (mActivity instanceof ConfirmAsyncListener) {
