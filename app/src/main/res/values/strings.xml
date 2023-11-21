@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">EatNow</string>
+    <string name="left_button">＜</string>
+    <string name="right_button">＞</string>
 </resources>

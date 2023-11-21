@@ -15,8 +15,10 @@ import android.location.LocationManager;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -48,6 +50,7 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
+    static String API_KEY="508dba382aa41e5c";
     //spinnerの中身を宣言
     int mRange=3;
     private MainActivity HotPepperUtils;
@@ -59,6 +62,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     static TextView textView;
     static ImageView imageView;
 
+    static  TextView pageNum1;
+    static  TextView pageNum2;
+    static  Button leftButton1;
+    static  Button rightButton1;
+    static  Button leftButton2;
+    static  Button rightButton2;
+
+    static int pageNumInt=0;
+
+
+
+    static ArrayList<String> photourl_list = new ArrayList<String>(); //店舗情報の記載されているlist
+    static ArrayList<String> textview_item_list = new ArrayList<String>(); //サムネイル画像のurlが記載されているリスト
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -338,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // URLの生成
         StringBuilder urlStringBuilder = new StringBuilder();
         urlStringBuilder.append("https://webservice.recruit.co.jp/hotpepper/gourmet/v1/?key="); //28以降はhttps
-        urlStringBuilder.append("508dba382aa41e5c");
+        urlStringBuilder.append(API_KEY);
 //        urlStringBuilder.append(genreSb.toString()); // 飲食店のジャンル
 //        urlStringBuilder.append("&midnight_meal="); // 23時以降食事OK
 //        urlStringBuilder.append(hotPepperGourmetSearch.getMidnight_meal());
@@ -502,57 +518,97 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                 int[] textViews = new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5, R.id.textView6, R.id.textView7, R.id.textView8, R.id.textView9, R.id.textView10};
                 int[] imageViews = new int[]{R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5, R.id.imageView6, R.id.imageView7, R.id.imageView8, R.id.imageView9, R.id.imageView10};
+                pageNum1=(TextView)mActivity.findViewById(R.id.pageNum1);
+                pageNum2=(TextView)mActivity.findViewById(R.id.pageNum2);
+                leftButton1=(Button)mActivity.findViewById(R.id.leftButton1);
+                leftButton2=(Button)mActivity.findViewById(R.id.leftButton2);
+                rightButton1=(Button)mActivity.findViewById(R.id.rightButton1);
+                rightButton2=(Button)mActivity.findViewById(R.id.rightButton2);
+
 
                 Log.d("SAMPLE", jsonArray.toString());
+
+                textview_item_list.clear(); //店舗情報のtextlistをクリア
+                photourl_list.clear(); //サムネイル画像のlistをクリア
+
+                //画面リセット
+                for(int i=0;i<10;i++){
+                    imageView = (ImageView) mActivity.findViewById(imageViews[i]);
+                    textView = (TextView) mActivity.findViewById(textViews[i]);
+                    textView.setText("");
+                    imageView.setImageDrawable(null);
+                }
+
                 for (int i = 0; i < jsonArray.length(); i++) {
 
                     HotPepperGourmet hotPepperGourmet = new HotPepperGourmet();
                     JSONObject json = jsonArray.getJSONObject(i);
-                    String photourl = json.getJSONObject("photo").getJSONObject("mobile").getString("l");
+                    String photourl = json.getJSONObject("photo").getJSONObject("mobile").getString("l");//サムネイル画像url
                     String id = json.getString("id"); // お店ID
                     String name = json.getString("name"); // 店名
-                    String address = json.getString("address"); // 住所
-                    Double lat = json.getDouble("lat"); // 緯度
-                    Double lng = json.getDouble("lng"); // 経度
+//                    String address = json.getString("address"); // 住所
+//                    Double lat = json.getDouble("lat"); // 緯度
+//                    Double lng = json.getDouble("lng"); // 経度
                     String lunch = json.getString("lunch"); //ランチありなし
-                    String url = json.getJSONObject("urls").getString("pc"); // URL
-                    String mobile_access = json.getString("mobile_access");
+                    String url = json.getJSONObject("urls").getString("pc"); // ホットペッパーグルメの店舗URL
+                    String mobile_access = json.getString("mobile_access"); //アプリ用の店舗へのアクセス
 
-                    Log.d(TAG, "画像url:" + photourl);
-                    Log.d(TAG, "お店ID:" + id);
+                    Log.d(TAG, "画像url:" + photourl);//サムネイル画像url
+                    Log.d(TAG, "お店ID:" + id);// お店ID
                     Log.d(TAG, "店名:" + name);
-                    Log.d(TAG, "住所:" + address);
-                    Log.d(TAG, "緯度:" + lat.toString());
-                    Log.d(TAG, "経度:" + lng.toString());
-                    Log.d(TAG, "ランチありなし:" + lunch);
-                    Log.d(TAG, "URL:" + url);
-                    Log.d(TAG, "アクセス" + mobile_access);
+//                    Log.d(TAG, "住所:" + address);
+//                    Log.d(TAG, "緯度:" + lat.toString());
+//                    Log.d(TAG, "経度:" + lng.toString());
+                    Log.d(TAG, "ランチありなし:" + lunch);//ランチありなし
+                    Log.d(TAG, "URL:" + url); // ホットペッパーグルメの店舗URL
+                    Log.d(TAG, "アクセス" + mobile_access); //アプリ用の店舗へのアクセス
 
-                    hotPepperGourmet.setId(id);
-                    hotPepperGourmet.setName(name);
-                    hotPepperGourmet.setAddress(address);
-                    hotPepperGourmet.setLat(lat);
-                    hotPepperGourmet.setLng(lng);
-                    hotPepperGourmet.setLunch(lunch);
-                    hotPepperGourmet.setUrl(url);
+//                    hotPepperGourmet.setId(id);// お店ID
+//                    hotPepperGourmet.setName(name); // 店名
+//                    hotPepperGourmet.setAddress(address);
+//                    hotPepperGourmet.setLat(lat);
+//                    hotPepperGourmet.setLng(lng);
+//                    hotPepperGourmet.setLunch(lunch);//ランチありなし
+//                    hotPepperGourmet.setUrl(url); // ホットペッパーグルメの店舗URL
 
                     hotPepperGourmetArray.add(hotPepperGourmet);
                     Log.d(TAG, "onPostExecute:" + hotPepperGourmetArray);
 
+                    textview_item_list.add(name  + "\n" + url + "\n" + mobile_access + "\n");
+                    photourl_list.add(photourl);
 
-                    if (i <= 9) {
-                        Log.d(TAG, "onPostExecute: photourl" + photourl);
-                        imageView = (ImageView) mActivity.findViewById(imageViews[i]);
-                        textView = (TextView) mActivity.findViewById(textViews[i]);
-                        Picasso.get()
-                                .load(photourl)
-                                .resize(1000, 1000)
-                                .into(imageView);
-                        textView.setText(name + "\n" + address + "\n" + url + "\n" + mobile_access + "\n");
+                    if(i<10 ) {
+
+                            Log.d(TAG, "onPostExecute: photourl" + photourl_list.get(i));
+                            imageView = (ImageView) mActivity.findViewById(imageViews[i]);
+                            textView = (TextView) mActivity.findViewById(textViews[i]);
+                            Picasso.get()
+                                    .load(photourl_list.get(i))
+                                    .resize(1000, 1000)
+                                    .into(imageView);
+                            textView.setText(textview_item_list.get(i));
+
+                            textView.setAutoLinkMask(Linkify.ALL);
+
                     }
 
-                    Log.d("SAMPLE", "wowowow" + hotPepperGourmetArray.toString());
+
                 }
+
+//                if(photourl_list.size()>=pageNumInt*10) {
+//                    for (int i = pageNumInt*10; i <(photourl_list.size()-pageNumInt*10)%10; i++) {
+//                        Log.d(TAG, "onPostExecute: photourl" + photourl_list.get(i));
+//                        imageView = (ImageView) mActivity.findViewById(imageViews[i]);
+//                        textView = (TextView) mActivity.findViewById(textViews[i]);
+//                        Picasso.get()
+//                                .load(photourl_list.get(i))
+//                                .resize(1000, 1000)
+//                                .into(imageView);
+//                        textView.setText(textview_item_list.get(i));
+//
+//                        textView.setAutoLinkMask(Linkify.ALL);
+//                    }
+//                }
 
                 if (mActivity instanceof ConfirmAsyncListener) {
                     // コールバック処理
