@@ -17,10 +17,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.util.Linkify;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,9 +52,9 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
-    static String API_KEY="508dba382aa41e5c";
+    static String API_KEY = "508dba382aa41e5c";
     //spinnerの中身を宣言
-    int mRange=3;
+    int mRange = 3;
     private MainActivity HotPepperUtils;
 
     private LocationManager manager; //位置情報
@@ -62,14 +64,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     static TextView textView;
     static ImageView imageView;
 
-    static  TextView pageNum1;
-    static  TextView pageNum2;
-    static  Button leftButton1;
-    static  Button rightButton1;
-    static  Button leftButton2;
-    static  Button rightButton2;
+    static TextView pageNum1;
+    static TextView pageNum2;
 
-    static int pageNumInt=0;
+    static TextView shopSum;
+
+    static Button leftButton1;
+    static Button rightButton1;
+    static Button leftButton2;
+    static Button rightButton2;
+
+    static int pageNumInt = 0;
+    static int pageSumInt = 0;
+
 
 
 
@@ -83,43 +90,168 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE); //LocationManagerクラスのインスタンスを取得します。
 
+        rightButton1 = (Button) findViewById(R.id.rightButton1);
+        rightButton2 = (Button) findViewById(R.id.rightButton2);
+        leftButton1 = (Button) findViewById(R.id.leftButton1);
+        leftButton2 = (Button) findViewById(R.id.leftButton2);
 
-        RadioGroup group = (RadioGroup)findViewById(R.id.radioGroup);
+        leftButton1.setVisibility(View.INVISIBLE);
+        leftButton2.setVisibility(View.INVISIBLE);
+        rightButton1.setVisibility(View.INVISIBLE);
+        rightButton2.setVisibility(View.INVISIBLE);
+
+
+
+        RadioGroup group = (RadioGroup) findViewById(R.id.radioGroup);
         group.setOnCheckedChangeListener((view, id) -> {
             if (id == R.id.radioButton1) {
-                mRange=1;
-            }
-            else if (id == R.id.radioButton2) {
-                mRange=2;
-            }
-            else if (id == R.id.radioButton3) {
-                mRange=3;
-            }
-            else if (id == R.id.radioButton4) {
-                mRange=4;
-            }
-            else if (id == R.id.radioButton5) {
-                mRange=5;
+                mRange = 1;
+            } else if (id == R.id.radioButton2) {
+                mRange = 2;
+            } else if (id == R.id.radioButton3) {
+                mRange = 3;
+            } else if (id == R.id.radioButton4) {
+                mRange = 4;
+            } else if (id == R.id.radioButton5) {
+                mRange = 5;
             }
             callHotPepperGroumetAPI();
+
+            pageNumInt=0;
+
+            pageNum1=(TextView)findViewById(R.id.pageNum1);
+            pageNum2=(TextView)findViewById(R.id.pageNum2);
+
+            pageNum1.setText("ページ"+(pageNumInt+1));
+            pageNum2.setText("ページ"+(pageNumInt+1));
+
+
         });
 
-        callHotPepperGroumetAPI();
+//        callHotPepperGroumetAPI();
 
+        findViewById(R.id.leftButton1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (0 < pageNumInt) {
+                    pageNumInt -= 1;
+                    pageChange();
+                    rightButton1.setVisibility(View.VISIBLE);
+                    rightButton2.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        findViewById(R.id.leftButton2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (0 < pageNumInt) {
+                    pageNumInt -= 1;
+                    pageChange();
+                    rightButton1.setVisibility(View.VISIBLE);
+                    rightButton2.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        findViewById(R.id.rightButton1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "SHOP:pageNumInt"+pageNumInt);
+                Log.d(TAG, "SHOP:pageSumInt"+pageSumInt);
+                if (pageNumInt < pageSumInt - 1) {
+                    pageNumInt += 1;
+
+                    pageChange();
+                    leftButton1.setVisibility(View.VISIBLE);
+                    leftButton2.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        findViewById(R.id.rightButton2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "SHOP:pageNumInt"+pageNumInt);
+                Log.d(TAG, "SHOP:pageSumInt"+pageSumInt);
+                if (pageNumInt < pageSumInt - 1) {
+                    pageNumInt += 1;
+
+                    pageChange();
+                    leftButton1.setVisibility(View.VISIBLE);
+                    leftButton2.setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
 
     }
 
+    public void pageChange() {
+        int[] textViews = new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5, R.id.textView6, R.id.textView7, R.id.textView8, R.id.textView9, R.id.textView10};
+        int[] imageViews = new int[]{R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5, R.id.imageView6, R.id.imageView7, R.id.imageView8, R.id.imageView9, R.id.imageView10};
 
-    public void callHotPepperGroumetAPI(){
+        pageNum1=(TextView)findViewById(R.id.pageNum1);
+        pageNum2=(TextView)findViewById(R.id.pageNum2);
+
+        pageNum1.setText("ページ"+(pageNumInt+1));
+        pageNum2.setText("ページ"+(pageNumInt+1));
+
+        for (int i = 0; i < 10; i++) {
+            imageView = (ImageView)findViewById(imageViews[i]);
+            textView = (TextView) findViewById(textViews[i]);
+            textView.setText("");
+            imageView.setImageDrawable(null);
+        }
+
+        if (pageNumInt < pageSumInt - 2) {
+            for (int i = pageNumInt * 10; i < (pageNumInt + 1) * 10; i++) {
+                Log.d(TAG, "onPostExecute: photourl" + photourl_list.get(i));
+
+                //画面リセット
+
+
+                imageView = (ImageView) findViewById(imageViews[i%10]);
+                textView = (TextView) findViewById(textViews[i%10]);
+                Picasso.get()
+                        .load(photourl_list.get(i))
+                        .resize(1000, 1000)
+                        .into(imageView);
+                textView.setText(textview_item_list.get(i));
+
+            }
+        }else{
+            for (int i = pageNumInt * 10; i < photourl_list.size(); i++) {
+                Log.d(TAG, "onPostExecute: photourl" + photourl_list.get(i));
+
+                //画面リセット
+                imageView = (ImageView) findViewById(imageViews[i % 10]);
+                textView = (TextView) findViewById(textViews[i % 10]);
+                Picasso.get()
+                        .load(photourl_list.get(i))
+                        .resize(1000, 1000)
+                        .into(imageView);
+                textView.setText(textview_item_list.get(i));
+            }
+            rightButton1.setVisibility(View.INVISIBLE);
+            rightButton2.setVisibility(View.INVISIBLE);
+
+        }
+
+        if(pageNumInt==0){
+            leftButton1.setVisibility(View.INVISIBLE);
+            leftButton2.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
+
+    public void callHotPepperGroumetAPI() {
         //https://webservice.recruit.co.jp/doc/hotpepper/reference.html#a1to参照
 //        mLat = 35.118223; //緯度
 //        mLng = 137.088432; //経度
         int mLunch = 0; //ランチの有無　0:絞り込まない（初期値）1:絞り込む
 
-        ArrayList<String> mGenreCdList = new ArrayList<String>(Arrays.asList("G001", "G002", "G003"));//ジャンル選択(https://webservice.recruit.co.jp/hotpepper/genre/v1/?key=sampleを参照)
-        int mMidnight_meal = 0; //23時以降食事OK	0:絞り込まない（初期値） 1:絞り込む
-        ArrayList<String> mKeywordList = new ArrayList<String>(Arrays.asList("海鮮")); //いずれか最低1つが必要。// 店名かな、店名、住所、駅名、お店ジャンルキャッチ、キャッチのフリーワード検索(部分一致)が可能です。文字コードはUTF8。半角スペース区切りの文字列を渡すことでAND検索になる。複数指定可能
+//        ArrayList<String> mGenreCdList = new ArrayList<String>(Arrays.asList("G001", "G002", "G003"));//ジャンル選択(https://webservice.recruit.co.jp/hotpepper/genre/v1/?key=sampleを参照)
+//        int mMidnight_meal = 0; //23時以降食事OK	0:絞り込まない（初期値） 1:絞り込む
+//        ArrayList<String> mKeywordList = new ArrayList<String>(Arrays.asList("海鮮")); //いずれか最低1つが必要。// 店名かな、店名、住所、駅名、お店ジャンルキャッチ、キャッチのフリーワード検索(部分一致)が可能です。文字コードはUTF8。半角スペース区切りの文字列を渡すことでAND検索になる。複数指定可能
 
         // HotPepperグルメAPIの呼び出し
         HotPepperGourmetSearch hotPepperGourmetSearch = new HotPepperGourmetSearch();
@@ -127,9 +259,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         hotPepperGourmetSearch.setLng(mLng); // 画面でセットした経度
         hotPepperGourmetSearch.setLunch(mLunch); // 画面でセットしたランチ有無
         hotPepperGourmetSearch.setRange(mRange); // 画面でセットした検索範囲距離//1: 300m 2: 500m 3: 1000m (初期値) 4: 2000m 5: 3000m
-        hotPepperGourmetSearch.setGenreCdList(mGenreCdList); // 画面でセットしたジャンルのリスト
-        hotPepperGourmetSearch.setMidnight_meal(mMidnight_meal); // 画面でセットした23時以降食事OK
-        hotPepperGourmetSearch.setKeywordList(mKeywordList); // 画面でセットしたキーワードのリスト
+//        hotPepperGourmetSearch.setGenreCdList(mGenreCdList); // 画面でセットしたジャンルのリスト
+//        hotPepperGourmetSearch.setMidnight_meal(mMidnight_meal); // 画面でセットした23時以降食事OK
+//        hotPepperGourmetSearch.setKeywordList(mKeywordList); // 画面でセットしたキーワードのリスト
         // APIコール
         HotPepperUtils.callHotPepperGourmetRestaurant(MainActivity.this, hotPepperGourmetSearch);
         Log.d("SAMPLE", "APIコール");
@@ -175,8 +307,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        mLat=location.getLatitude();
-        mLng=location.getLongitude();
+        mLat = location.getLatitude();
+        mLng = location.getLongitude();
 //        String text = "緯度：" + location.getLatitude() + "経度：" + location.getLongitude();
 //        textView.setText(text);
     }
@@ -326,30 +458,30 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // URLの作成
 
         // ジャンルの切り取り
-        StringBuilder genreSb = new StringBuilder();
-        genreSb.append("&genre=");
+//        StringBuilder genreSb = new StringBuilder();
+//        genreSb.append("&genre=");
 
-        for (int i = 0; i < hotPepperGourmetSearch.getGenreCdList().size(); i++) {
-            if (i > 0) {
-                genreSb.append("&genre=");
-            }
-
-            String genreCd = hotPepperGourmetSearch.getGenreCdList().get(i);
-            genreSb.append(genreCd);
-        }
+//        for (int i = 0; i < hotPepperGourmetSearch.getGenreCdList().size(); i++) {
+//            if (i > 0) {
+//                genreSb.append("&genre=");
+//            }
+//
+//            String genreCd = hotPepperGourmetSearch.getGenreCdList().get(i);
+//            genreSb.append(genreCd);
+//        }
 
         // キーワードの切り取り
-        StringBuilder keywordSb = new StringBuilder();
-        keywordSb.append("&keyword=");
+//        StringBuilder keywordSb = new StringBuilder();
+//        keywordSb.append("&keyword=");
 
-        for (int i = 0; i < hotPepperGourmetSearch.getKeywordList().size(); i++) {
-            if (i > 0) {
-                keywordSb.append("&keyword=");
-            }
-
-            String keyword = hotPepperGourmetSearch.getKeywordList().get(i);
-            keywordSb.append(keyword);
-        }
+//        for (int i = 0; i < hotPepperGourmetSearch.getKeywordList().size(); i++) {
+//            if (i > 0) {
+//                keywordSb.append("&keyword=");
+//            }
+//
+//            String keyword = hotPepperGourmetSearch.getKeywordList().get(i);
+//            keywordSb.append(keyword);
+//        }
 
         // URLの生成
         StringBuilder urlStringBuilder = new StringBuilder();
@@ -518,12 +650,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                 int[] textViews = new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5, R.id.textView6, R.id.textView7, R.id.textView8, R.id.textView9, R.id.textView10};
                 int[] imageViews = new int[]{R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5, R.id.imageView6, R.id.imageView7, R.id.imageView8, R.id.imageView9, R.id.imageView10};
-                pageNum1=(TextView)mActivity.findViewById(R.id.pageNum1);
-                pageNum2=(TextView)mActivity.findViewById(R.id.pageNum2);
-                leftButton1=(Button)mActivity.findViewById(R.id.leftButton1);
-                leftButton2=(Button)mActivity.findViewById(R.id.leftButton2);
-                rightButton1=(Button)mActivity.findViewById(R.id.rightButton1);
-                rightButton2=(Button)mActivity.findViewById(R.id.rightButton2);
+                pageNum1 = (TextView) mActivity.findViewById(R.id.pageNum1);
+                pageNum2 = (TextView) mActivity.findViewById(R.id.pageNum2);
+                leftButton1 = (Button) mActivity.findViewById(R.id.leftButton1);
+                leftButton2 = (Button) mActivity.findViewById(R.id.leftButton2);
+                rightButton1 = (Button) mActivity.findViewById(R.id.rightButton1);
+                rightButton2 = (Button) mActivity.findViewById(R.id.rightButton2);
 
 
                 Log.d("SAMPLE", jsonArray.toString());
@@ -532,7 +664,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 photourl_list.clear(); //サムネイル画像のlistをクリア
 
                 //画面リセット
-                for(int i=0;i<10;i++){
+                for (int i = 0; i < 10; i++) {
                     imageView = (ImageView) mActivity.findViewById(imageViews[i]);
                     textView = (TextView) mActivity.findViewById(textViews[i]);
                     textView.setText("");
@@ -574,26 +706,47 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     hotPepperGourmetArray.add(hotPepperGourmet);
                     Log.d(TAG, "onPostExecute:" + hotPepperGourmetArray);
 
-                    textview_item_list.add(name  + "\n" + url + "\n" + mobile_access + "\n");
+                    textview_item_list.add(name + "\n" + url + "\n" + mobile_access + "\n");
                     photourl_list.add(photourl);
 
-                    if(i<10 ) {
+                    if (i < 10) {
 
-                            Log.d(TAG, "onPostExecute: photourl" + photourl_list.get(i));
-                            imageView = (ImageView) mActivity.findViewById(imageViews[i]);
-                            textView = (TextView) mActivity.findViewById(textViews[i]);
-                            Picasso.get()
-                                    .load(photourl_list.get(i))
-                                    .resize(1000, 1000)
-                                    .into(imageView);
-                            textView.setText(textview_item_list.get(i));
+                        Log.d(TAG, "onPostExecute: photourl" + photourl_list.get(i));
+                        imageView = (ImageView) mActivity.findViewById(imageViews[i]);
+                        textView = (TextView) mActivity.findViewById(textViews[i]);
+                        Picasso.get()
+                                .load(photourl_list.get(i))
+                                .resize(1000, 1000)
+                                .into(imageView);
+                        textView.setText(textview_item_list.get(i));
 
-                            textView.setAutoLinkMask(Linkify.ALL);
+                        textView.setAutoLinkMask(Linkify.ALL);
 
                     }
 
 
                 }
+
+                Log.d(TAG, "SHOP: "+photourl_list.size());
+
+                pageSumInt = (int) Math.ceil(photourl_list.size() / 10)+1;
+
+                Log.d(TAG, "SHOP:pageSumInt "+pageSumInt);
+
+                if (photourl_list.size() >= 0 && photourl_list.size() <= 10) {
+                    leftButton1.setVisibility(View.INVISIBLE);
+                    leftButton2.setVisibility(View.INVISIBLE);
+                    rightButton1.setVisibility(View.INVISIBLE);
+                    rightButton2.setVisibility(View.INVISIBLE);
+                } else {
+                    leftButton1.setVisibility(View.INVISIBLE);
+                    leftButton2.setVisibility(View.INVISIBLE);
+                    rightButton1.setVisibility(View.VISIBLE);
+                    rightButton2.setVisibility(View.VISIBLE);
+                }
+
+                shopSum=(TextView)mActivity.findViewById(R.id.shopSum);
+                shopSum.setText("検索結果："+photourl_list.size()+"件");
 
 //                if(photourl_list.size()>=pageNumInt*10) {
 //                    for (int i = pageNumInt*10; i <(photourl_list.size()-pageNumInt*10)%10; i++) {
