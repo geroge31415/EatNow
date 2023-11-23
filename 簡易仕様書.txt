@@ -1,0 +1,173 @@
+# 簡易仕様書
+
+### 作者
+小林恭平
+### アプリ名
+EatNow
+
+#### コンセプト
+食べに行きたいお店がすぐ見つかる。
+とにかく手軽
+とにかく情報を渡して、店舗決定のトリガーになる
+
+#### こだわったポイント
+操作しやすい一画面、ページングに対応、詳細な情報はホームページへ
+
+### 公開したアプリの URL（Store にリリースしている場合）
+公開しておりません。
+
+### 該当プロジェクトのリポジトリ URL（GitHub,GitLab など Git ホスティングサービスを利用されている場合）
+https://github.com/xxxx
+
+## 開発環境
+### 開発環境
+Android Studio 4.1
+Build #AI-201.8743.12.41.6858069, built on September 24, 2020
+ランタイム・バージョン: 1.8.0_242-release-1644-b01 amd64
+VM: OpenJDK 64-Bit Server VM by JetBrains s.r.o
+Windows 10 10.0
+GC: ParNew, ConcurrentMarkSweep
+Memory: 1237M
+Cores: 16
+Registry: ide.new.welcome.screen.force=true
+
+
+### 開発言語
+Java 17.0.8.7-hotspot
+
+
+## 動作対象端末・OS
+### 動作対象OS
+
+
+
+Name: Nexus_6P_API_30_test
+
+CPU/ABI: Google APIs Intel Atom (x86)
+
+Path: C:\Users\kyohe\.android\avd\Nexus_6P_API_28_2.avd
+
+Target: google_apis [Google APIs] (API level 30)
+
+Skin: nexus_6p
+
+SD Card: 512 MB
+
+fastboot.chosenSnapshotFile: 
+
+runtime.network.speed: full
+
+hw.accelerometer: yes
+
+hw.device.name: Nexus 6P
+
+hw.lcd.width: 1440
+
+hw.initialOrientation: Portrait
+
+image.androidVersion.api: 30
+
+tag.id: google_apis
+
+hw.mainKeys: no
+
+hw.camera.front: emulated
+
+avd.ini.displayname: Nexus 6P API 30 test
+
+hw.gpu.mode: auto
+
+hw.ramSize: 1536
+
+PlayStore.enabled: false
+
+fastboot.forceColdBoot: no
+
+hw.cpu.ncore: 4
+
+hw.keyboard: yes
+
+hw.sensors.proximity: yes
+
+hw.dPad: no
+
+hw.lcd.height: 2560
+
+vm.heapSize: 384
+
+skin.dynamic: yes
+
+hw.device.manufacturer: Google
+
+hw.gps: yes
+
+hw.audioInput: yes
+
+image.sysdir.1: system-images\android-30\google_apis\x86\
+
+showDeviceFrame: yes
+
+hw.camera.back: virtualscene
+
+AvdId: Nexus_6P_API_30_test
+
+hw.lcd.density: 560
+
+hw.arc: false
+
+hw.device.hash2: MD5:869d76256fcdae165862720ddb8343f9
+
+fastboot.forceChosenSnapshotBoot: no
+
+fastboot.forceFastBoot: yes
+
+hw.trackBall: no
+
+hw.battery: yes
+
+hw.sdCard: yes
+
+tag.display: Google APIs
+
+runtime.network.latency: none
+
+disk.dataPartition.size: 800M
+
+hw.sensors.orientation: yes
+
+avd.ini.encoding: UTF-8
+
+hw.gpu.enabled: yes
+
+## 開発期間
+7日間
+
+## アプリケーション機能
+
+### 機能一覧
+- レストラン検索：ホットペッパーグルメサーチAPIを使用して、現在地周辺の飲食店を検索する。
+- レストラン情報取得：ホットペッパーグルメサーチAPIを使用して、飲食店の詳細情報を取得する。
+- レストランホームページ掲載：URLを記載することで、予約をしたり詳細なメニューなどを確認できる
+
+### 画面一覧
+ 検索画面 ：条件を指定してレストランを検索する。
+ 一覧画面 ：検索結果の飲食店を一覧表示する。
+を一体化しました。
+
+### 使用しているAPI,SDK,ライブラリなど
+- ホットペッパーグルメサーチAPI
+
+### アドバイスして欲しいポイント
+APIコールの設計の仕方
+変数やコードの書き方
+UI,UXの改善点
+
+#自己評価
+久しぶりのアプリ制作で難しいところや壁にぶつかったところもありましたが、完成させよう、やり遂げようの一心で完成することができたので75点です。
+足りない25点は機能の充実度です。
+
+#申し送り
+店舗詳細画面につきましては、アプリ内で実装するよりもURLからホットペッパーグルメサイトに遷移していく形で実現させていただきました。
+そのため、画面外で実装しておりますが要件の誤読ではないことをご了承ください。
+
+
