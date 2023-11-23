@@ -52,30 +52,30 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
-    static String API_KEY = "508dba382aa41e5c";
+    static String API_KEY = "508dba382aa41e5c"; //APIKEY
     //spinnerの中身を宣言
-    int mRange = 3;
+    int mRange = 3; //距離の初期値
     private MainActivity HotPepperUtils;
 
     private LocationManager manager; //位置情報
-    double mLat;
-    double mLng;
+    double mLat; //緯度
+    double mLng; //経度
 
     static TextView textView;
     static ImageView imageView;
 
-    static TextView pageNum1;
-    static TextView pageNum2;
+    static TextView pageNum1; //画面上部のページ数を表示するテキスト
+    static TextView pageNum2; //画面下部のページ数を表示するテキスト
 
-    static TextView shopSum;
+    static TextView shopSum; //検索結果の件数
 
-    static Button leftButton1;
-    static Button rightButton1;
-    static Button leftButton2;
-    static Button rightButton2;
+    static Button leftButton1; //画面上部の左のボタン
+    static Button rightButton1; //画面上部の右のボタン
+    static Button leftButton2; //画面下部の左のボタン
+    static Button rightButton2; //画面下部の右のボタン
 
-    static int pageNumInt = 0;
-    static int pageSumInt = 0;
+    static int pageNumInt = 0; //現在のページ数-1
+    static int pageSumInt = 0; //合計ページ数
 
 
 
@@ -95,89 +95,90 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         leftButton1 = (Button) findViewById(R.id.leftButton1);
         leftButton2 = (Button) findViewById(R.id.leftButton2);
 
+
+        //ボタンを見えなくする
         leftButton1.setVisibility(View.INVISIBLE);
         leftButton2.setVisibility(View.INVISIBLE);
         rightButton1.setVisibility(View.INVISIBLE);
         rightButton2.setVisibility(View.INVISIBLE);
 
 
-
+        //ラジオボタンを操作した際に動く
         RadioGroup group = (RadioGroup) findViewById(R.id.radioGroup);
         group.setOnCheckedChangeListener((view, id) -> {
-            if (id == R.id.radioButton1) {
-                mRange = 1;
-            } else if (id == R.id.radioButton2) {
-                mRange = 2;
-            } else if (id == R.id.radioButton3) {
-                mRange = 3;
-            } else if (id == R.id.radioButton4) {
-                mRange = 4;
-            } else if (id == R.id.radioButton5) {
-                mRange = 5;
-            }
-            callHotPepperGroumetAPI();
 
-            pageNumInt=0;
+            //ラジオボタンで選択された距離を設定
+            if (id == R.id.radioButton1) {
+                mRange = 1; //300m
+            } else if (id == R.id.radioButton2) {
+                mRange = 2; //500m
+            } else if (id == R.id.radioButton3) {
+                mRange = 3; //1000m
+            } else if (id == R.id.radioButton4) {
+                mRange = 4; //2000m
+            } else if (id == R.id.radioButton5) {
+                mRange = 5; //3000m
+            }
+
+            callHotPepperGroumetAPI(); //API呼び出し
+
+            pageNumInt=0; //ページ数を0に設定
 
             pageNum1=(TextView)findViewById(R.id.pageNum1);
             pageNum2=(TextView)findViewById(R.id.pageNum2);
 
+            //ページ数を画面に表示(ページ1)
             pageNum1.setText("ページ"+(pageNumInt+1));
             pageNum2.setText("ページ"+(pageNumInt+1));
 
+            ScrollView scrollView = findViewById(R.id.scrollView); // ScrollViewのIDを
+            scrollView.scrollTo(0, 0); // xとyのオフセットを0に設定して一番上にスクロール
 
         });
 
-//        callHotPepperGroumetAPI();
 
+        //一つ前のページに遷移する場合
         findViewById(R.id.leftButton1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (0 < pageNumInt) {
-                    pageNumInt -= 1;
-                    pageChange();
-                    rightButton1.setVisibility(View.VISIBLE);
-                    rightButton2.setVisibility(View.VISIBLE);
-                }
+                    pageNumInt -= 1; //現在のページから1つ左に移動
+                    pageChange(); //ページ遷移関数
+                    rightButton1.setVisibility(View.VISIBLE); //画面上部右ボタンを見えるようにする
+                    rightButton2.setVisibility(View.VISIBLE); //画面下部右ボタンを見えるようにする
             }
         });
+        //一つ前のページに遷移する場合
         findViewById(R.id.leftButton2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (0 < pageNumInt) {
-                    pageNumInt -= 1;
-                    pageChange();
-                    rightButton1.setVisibility(View.VISIBLE);
-                    rightButton2.setVisibility(View.VISIBLE);
-                }
+                    pageNumInt -= 1; //現在のページから1つ左に移動
+                    pageChange();  //ページ遷移関数
+                    rightButton1.setVisibility(View.VISIBLE); //画面上部右ボタンを見えるようにする
+                    rightButton2.setVisibility(View.VISIBLE); //画面下部右ボタンを見えるようにする
             }
         });
+        //一つ後ろのページに遷移する場合
         findViewById(R.id.rightButton1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "SHOP:pageNumInt"+pageNumInt);
-                Log.d(TAG, "SHOP:pageSumInt"+pageSumInt);
-                if (pageNumInt < pageSumInt - 1) {
-                    pageNumInt += 1;
+                    pageNumInt += 1; //現在のページから1つ右に移動
 
-                    pageChange();
-                    leftButton1.setVisibility(View.VISIBLE);
-                    leftButton2.setVisibility(View.VISIBLE);
-                }
+                    pageChange(); //ページ遷移関数
+                    leftButton1.setVisibility(View.VISIBLE); //画面上部左ボタンを見えるようにする
+                    leftButton2.setVisibility(View.VISIBLE); //画面下部左ボタンを見えるようにする
+
             }
         });
+        //一つ後ろのページに遷移する場合
         findViewById(R.id.rightButton2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "SHOP:pageNumInt"+pageNumInt);
-                Log.d(TAG, "SHOP:pageSumInt"+pageSumInt);
-                if (pageNumInt < pageSumInt - 1) {
-                    pageNumInt += 1;
+                    pageNumInt += 1; //現在のページから1つ右に移動
 
-                    pageChange();
-                    leftButton1.setVisibility(View.VISIBLE);
-                    leftButton2.setVisibility(View.VISIBLE);
-                }
+                    pageChange(); //ページ遷移関数
+                    leftButton1.setVisibility(View.VISIBLE); //画面上部左ボタンを見えるようにする
+                    leftButton2.setVisibility(View.VISIBLE); //画面下部左ボタンを見えるようにする
+
             }
         });
 
@@ -185,15 +186,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void pageChange() {
+
         int[] textViews = new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5, R.id.textView6, R.id.textView7, R.id.textView8, R.id.textView9, R.id.textView10};
         int[] imageViews = new int[]{R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5, R.id.imageView6, R.id.imageView7, R.id.imageView8, R.id.imageView9, R.id.imageView10};
 
         pageNum1=(TextView)findViewById(R.id.pageNum1);
         pageNum2=(TextView)findViewById(R.id.pageNum2);
 
+
+        //現在のページ数を表示
         pageNum1.setText("ページ"+(pageNumInt+1));
         pageNum2.setText("ページ"+(pageNumInt+1));
 
+
+        //画面をクリア
         for (int i = 0; i < 10; i++) {
             imageView = (ImageView)findViewById(imageViews[i]);
             textView = (TextView) findViewById(textViews[i]);
@@ -201,41 +207,44 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             imageView.setImageDrawable(null);
         }
 
-        if (pageNumInt < pageSumInt - 2) {
+
+        if (pageNumInt < pageSumInt - 1) { //1～最終ページの一つ前のページ
             for (int i = pageNumInt * 10; i < (pageNumInt + 1) * 10; i++) {
-                Log.d(TAG, "onPostExecute: photourl" + photourl_list.get(i));
-
-                //画面リセット
-
 
                 imageView = (ImageView) findViewById(imageViews[i%10]);
                 textView = (TextView) findViewById(textViews[i%10]);
+                //画像セット
                 Picasso.get()
                         .load(photourl_list.get(i))
                         .resize(1000, 1000)
                         .into(imageView);
+                //textセット
                 textView.setText(textview_item_list.get(i));
 
             }
-        }else{
+        }else{ //最終ページ
             for (int i = pageNumInt * 10; i < photourl_list.size(); i++) {
-                Log.d(TAG, "onPostExecute: photourl" + photourl_list.get(i));
-
-                //画面リセット
                 imageView = (ImageView) findViewById(imageViews[i % 10]);
                 textView = (TextView) findViewById(textViews[i % 10]);
+                //画像セット
                 Picasso.get()
                         .load(photourl_list.get(i))
                         .resize(1000, 1000)
                         .into(imageView);
+                //textセット
                 textView.setText(textview_item_list.get(i));
             }
+
+            Log.d(TAG, "pageChange: "+pageNumInt+":"+pageSumInt);
+            //最終ページの場合,右ボタンを見えなくする
             rightButton1.setVisibility(View.INVISIBLE);
             rightButton2.setVisibility(View.INVISIBLE);
 
         }
 
+        //1ページ目の場合
         if(pageNumInt==0){
+            //左ボタンを非表示
             leftButton1.setVisibility(View.INVISIBLE);
             leftButton2.setVisibility(View.INVISIBLE);
         }
@@ -245,14 +254,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public void callHotPepperGroumetAPI() {
         //https://webservice.recruit.co.jp/doc/hotpepper/reference.html#a1to参照
-//        mLat = 35.118223; //緯度
-//        mLng = 137.088432; //経度
         int mLunch = 0; //ランチの有無　0:絞り込まない（初期値）1:絞り込む
 
 //        ArrayList<String> mGenreCdList = new ArrayList<String>(Arrays.asList("G001", "G002", "G003"));//ジャンル選択(https://webservice.recruit.co.jp/hotpepper/genre/v1/?key=sampleを参照)
 //        int mMidnight_meal = 0; //23時以降食事OK	0:絞り込まない（初期値） 1:絞り込む
 //        ArrayList<String> mKeywordList = new ArrayList<String>(Arrays.asList("海鮮")); //いずれか最低1つが必要。// 店名かな、店名、住所、駅名、お店ジャンルキャッチ、キャッチのフリーワード検索(部分一致)が可能です。文字コードはUTF8。半角スペース区切りの文字列を渡すことでAND検索になる。複数指定可能
-
         // HotPepperグルメAPIの呼び出し
         HotPepperGourmetSearch hotPepperGourmetSearch = new HotPepperGourmetSearch();
         hotPepperGourmetSearch.setLat(mLat); // 画面でセットした緯度
@@ -279,6 +285,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     }
 
+
+    //位置情報のパーミッション許可
     @Override
     protected void onResume() {
         super.onResume();
@@ -293,6 +301,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 1, this);
     }
 
+    //終了処理
     @Override
     protected void onStop() {
         super.onStop();
@@ -305,12 +314,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
+
+    //位置情報が変更された場合取得
     @Override
     public void onLocationChanged(@NonNull Location location) {
         mLat = location.getLatitude();
         mLng = location.getLongitude();
-//        String text = "緯度：" + location.getLatitude() + "経度：" + location.getLongitude();
-//        textView.setText(text);
     }
 
 
@@ -505,11 +514,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         URL url = null;
 
+        //url接続
         try {
             url = new URL(urlStringBuilder.toString());
             // 非同期処理
             new RestaurantAsync(activity).execute(url).get(10000, TimeUnit.MILLISECONDS);
-            Log.d("SAMPLE", "callHotPepperGourmetRestaurant: try finish");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
@@ -527,7 +536,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 RestaurantAsync.sProgressDialog.dismiss();
             }
         }
-        Log.d("SAMPLE", url.toString());
+
     }
 
 
@@ -574,21 +583,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         protected String doInBackground(URL... url) {
             HttpURLConnection con = null;
             URL urls = url[0];
-            Log.d("SAMPLE", urls.toString());
             try {
 
                 con = (HttpURLConnection) urls.openConnection();
-                Log.d("SAMPLE", "doInBackground:try 1 ");
                 // JSONダウンロード
                 con.setRequestMethod("GET");
                 // タイムアウト3秒
                 con.setConnectTimeout(3000);
-                Log.d("SAMPLE", "doInBackground:try 1 ");
                 con.setReadTimeout(3000);
-                Log.d("SAMPLE", "doInBackground:try 3 ");
                 // 接続
                 con.connect();
-                Log.d("SAMPLE", "doInBackground:try 4 ");
                 // レスポンスコードの確認
                 int resCd = con.getResponseCode();
 
@@ -603,14 +607,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                 while (true) {
                     line = reader.readLine();
-                    Log.d("SAMPLE", "doInBackground: line:" + line);
                     if (line == null) {
                         break;
                     }
 
                     mBuffer.append(line);
                 }
-                Log.d("SAMPLE", "doInBackground:finish ");
                 // クローズ
                 inputStream.close();
                 reader.close();
@@ -637,16 +639,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-            Log.d("SAMPLE", "onPostExecute: " + result);
             try {
-                Log.d("SAMPLE", "try2");
                 // JSONをパースして各飲食店の情報を取得する
                 JSONObject jsonObject = new JSONObject(result);
-                Log.d("SAMPLE", "1");
                 JSONArray jsonArray = jsonObject.getJSONObject("results").getJSONArray("shop");
-                Log.d("SAMPLE", "2");
                 ArrayList<HotPepperGourmet> hotPepperGourmetArray = new ArrayList<>();
-                Log.d("SAMPLE", "3");
 
                 int[] textViews = new int[]{R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4, R.id.textView5, R.id.textView6, R.id.textView7, R.id.textView8, R.id.textView9, R.id.textView10};
                 int[] imageViews = new int[]{R.id.imageView1, R.id.imageView2, R.id.imageView3, R.id.imageView4, R.id.imageView5, R.id.imageView6, R.id.imageView7, R.id.imageView8, R.id.imageView9, R.id.imageView10};
@@ -658,7 +655,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 rightButton2 = (Button) mActivity.findViewById(R.id.rightButton2);
 
 
-                Log.d("SAMPLE", jsonArray.toString());
 
                 textview_item_list.clear(); //店舗情報のtextlistをクリア
                 photourl_list.clear(); //サムネイル画像のlistをクリア
@@ -671,6 +667,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     imageView.setImageDrawable(null);
                 }
 
+                //店の数の分だけJSONから抽出
                 for (int i = 0; i < jsonArray.length(); i++) {
 
                     HotPepperGourmet hotPepperGourmet = new HotPepperGourmet();
@@ -681,19 +678,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 //                    String address = json.getString("address"); // 住所
 //                    Double lat = json.getDouble("lat"); // 緯度
 //                    Double lng = json.getDouble("lng"); // 経度
-                    String lunch = json.getString("lunch"); //ランチありなし
+//                    String lunch = json.getString("lunch"); //ランチありなし
                     String url = json.getJSONObject("urls").getString("pc"); // ホットペッパーグルメの店舗URL
                     String mobile_access = json.getString("mobile_access"); //アプリ用の店舗へのアクセス
 
-                    Log.d(TAG, "画像url:" + photourl);//サムネイル画像url
-                    Log.d(TAG, "お店ID:" + id);// お店ID
-                    Log.d(TAG, "店名:" + name);
+//                    Log.d(TAG, "画像url:" + photourl);//サムネイル画像url
+//                    Log.d(TAG, "お店ID:" + id);// お店ID
+//                    Log.d(TAG, "店名:" + name);
 //                    Log.d(TAG, "住所:" + address);
 //                    Log.d(TAG, "緯度:" + lat.toString());
 //                    Log.d(TAG, "経度:" + lng.toString());
-                    Log.d(TAG, "ランチありなし:" + lunch);//ランチありなし
-                    Log.d(TAG, "URL:" + url); // ホットペッパーグルメの店舗URL
-                    Log.d(TAG, "アクセス" + mobile_access); //アプリ用の店舗へのアクセス
+//                    Log.d(TAG, "ランチありなし:" + lunch);//ランチありなし
+//                    Log.d(TAG, "URL:" + url); // ホットペッパーグルメの店舗URL
+//                    Log.d(TAG, "アクセス" + mobile_access); //アプリ用の店舗へのアクセス
 
 //                    hotPepperGourmet.setId(id);// お店ID
 //                    hotPepperGourmet.setName(name); // 店名
@@ -703,36 +700,32 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 //                    hotPepperGourmet.setLunch(lunch);//ランチありなし
 //                    hotPepperGourmet.setUrl(url); // ホットペッパーグルメの店舗URL
 
-                    hotPepperGourmetArray.add(hotPepperGourmet);
-                    Log.d(TAG, "onPostExecute:" + hotPepperGourmetArray);
+//                    hotPepperGourmetArray.add(hotPepperGourmet);
 
-                    textview_item_list.add(name + "\n" + url + "\n" + mobile_access + "\n");
-                    photourl_list.add(photourl);
+                    textview_item_list.add(name + "\n" + url + "\n" + mobile_access + "\n"); //表示するテキストリストに追加
+                    photourl_list.add(photourl); //表示するサムネイル画像のをリストに追加
 
+                    //最初の10件を表示
                     if (i < 10) {
-
-                        Log.d(TAG, "onPostExecute: photourl" + photourl_list.get(i));
                         imageView = (ImageView) mActivity.findViewById(imageViews[i]);
                         textView = (TextView) mActivity.findViewById(textViews[i]);
+                        //画像表示
                         Picasso.get()
                                 .load(photourl_list.get(i))
                                 .resize(1000, 1000)
                                 .into(imageView);
+                        //テキスト表示
                         textView.setText(textview_item_list.get(i));
 
-                        textView.setAutoLinkMask(Linkify.ALL);
-
                     }
-
-
                 }
 
-                Log.d(TAG, "SHOP: "+photourl_list.size());
 
-                pageSumInt = (int) Math.ceil(photourl_list.size() / 10)+1;
+                Log.d(TAG, "pageChange: photo"+photourl_list.size());
+                pageSumInt = (int) Math.ceil(photourl_list.size() / 10.0); //検索結果の店数を設定
 
-                Log.d(TAG, "SHOP:pageSumInt "+pageSumInt);
 
+                //検索結果数が0～10の場合
                 if (photourl_list.size() >= 0 && photourl_list.size() <= 10) {
                     leftButton1.setVisibility(View.INVISIBLE);
                     leftButton2.setVisibility(View.INVISIBLE);
@@ -745,23 +738,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     rightButton2.setVisibility(View.VISIBLE);
                 }
 
+                //検索結果の店数を表示
                 shopSum=(TextView)mActivity.findViewById(R.id.shopSum);
                 shopSum.setText("検索結果："+photourl_list.size()+"件");
 
-//                if(photourl_list.size()>=pageNumInt*10) {
-//                    for (int i = pageNumInt*10; i <(photourl_list.size()-pageNumInt*10)%10; i++) {
-//                        Log.d(TAG, "onPostExecute: photourl" + photourl_list.get(i));
-//                        imageView = (ImageView) mActivity.findViewById(imageViews[i]);
-//                        textView = (TextView) mActivity.findViewById(textViews[i]);
-//                        Picasso.get()
-//                                .load(photourl_list.get(i))
-//                                .resize(1000, 1000)
-//                                .into(imageView);
-//                        textView.setText(textview_item_list.get(i));
-//
-//                        textView.setAutoLinkMask(Linkify.ALL);
-//                    }
-//                }
 
                 if (mActivity instanceof ConfirmAsyncListener) {
                     // コールバック処理

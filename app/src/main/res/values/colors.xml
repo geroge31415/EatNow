@@ -8,4 +8,18 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFF</color>
     <color name="red">#FFFF0000</color>
+    <color name="gray">#CB323232</color>
+    <color name="orange">#BCFF5722</color>
+    <!-- ActionBarの背景色 -->
+    <color name="colorPrimary">#FFFF0000</color>
+    <!-- ステータスバーの背景色 -->
+    <color name="colorPrimaryDark">#FF5722</color>
+    <!-- TabLayoutの下線やRadioButton選択時などの色 -->
+    <color name="colorAccent">#ed082e</color>
+    <!-- ActionBarの文字色 -->
+    <color name="textColorPrimary">#FFFFFF</color>
+    <!-- ウィンドウ背景色 -->
+    <color name="windowBackground">#575757</color>
+    <!-- ナビゲーションバー（戻るキー・ホームキーなどがあるバー）の背景色 -->
+    <color name="navigationBarColor">#000000</color>
 </resources>

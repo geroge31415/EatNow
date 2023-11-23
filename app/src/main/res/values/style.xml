@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat">
+        <!-- ActionBarの背景色 -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <!-- ステータスバーの背景色 -->
+        <item name="colorPrimaryDark">#FF5722</item>
+        <!-- TabLayoutの下線やRadioButton選択時などの色 -->
+        <item name="colorAccent">@color/colorPrimary</item>
+        <!--ActionBarの文字色 -->
+        <item name="android:textColorPrimary">@color/white</item>
+        <!-- ウィンドウ背景色 -->
+        <item name="android:windowBackground">#FFFFFF</item>
+        <!-- ナビゲーションバー（戻るキー・ホームキーなどがあるバー）の背景色 -->
+        <item name="android:navigationBarColor">@color/black</item>
+    </style>
+
+
+    <style name="RadioButtonStyle" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:buttonTint">@color/orange</item>
+    </style>
+
+
+</resources>
